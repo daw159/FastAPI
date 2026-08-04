@@ -1,0 +1,13 @@
+[project]
+name = "fastapi-path"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "daw159", email = "mdawood78612@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = []
+
+[tool.uv]
+package = false
