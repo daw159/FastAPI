@@ -4,6 +4,8 @@ from fastapi.templating import Jinja2Templates
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as starletteexception
+from schemas import PostCreate ,PostResponse
+
 
 app = FastAPI()
 
@@ -26,13 +28,6 @@ posts: list[dict] = [
         "content": "Python is a great language for web development, and FastAPI makes it even better.",
         "date_posted": "April 21, 2025",
     },
-]
-
-comments: list[dict] = [
-    {"id": 1, "post_id": 1, "author": "Ali", "text": "Great post!"},
-    {"id": 2, "post_id": 1, "author": "Sara", "text": "Very helpful, thanks."},
-    {"id": 3, "post_id": 2, "author": "Ali", "text": "Nice explanation."},
-    {"id": 4, "post_id": 2, "author": "Zara", "text": "I learned a lot from this."},
 ]
 
 
@@ -60,28 +55,32 @@ def post_page(post_id: int,request: Request):
         status_code=status.HTTP_404_NOT_FOUND,detail=f"Post with id {post_id} not found")
 
 
-@app.get("/api/posts")
+@app.get("/api/posts",response_model=list[PostResponse])
 def get_posts():
     return posts
 
 
-@app.get("/api/posts/{post_id}")
+@app.post("/api/posts",response_model=PostResponse,status_code=status.HTTP_201_CREATED)
+def create_post(post:PostCreate):
+    new_id=max(p["id"] for p in posts )+1 if posts else 1
+    new_post={
+        "id":new_id,
+        "title":post.title,
+        "author":post.author,
+        "content":post.content,
+        "date_posted":"17 Aug 2026",
+    }
+    
+    posts.append(new_post)
+    return new_post
+
+@app.get("/api/posts/{post_id}",response_model=PostResponse)
 def get_post(post_id: int):
     for post in posts:
         if post["id"] == post_id:
             return post
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,detail=f"Post with id {post_id} not found")
-    
-
-@app.get("/api/posts/{post_id}/comments/{comment_id}")
-def get_commentdata(post_id: int, comment_id: int):
-    for c in comments:
-        if c["id"] == comment_id and c["post_id"] == post_id:
-            return c
-    raise HTTPException(status_code=404, detail=f"Comment {comment_id} not found on post {post_id}")
-        
-        
 
 
 @app.exception_handler(starletteexception)
@@ -129,7 +128,3 @@ def validation_exceptionhandler(request:Request,exception:RequestValidationError
         },
         status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
     )
-
-
-
-

@@ -1,0 +1,17 @@
+[project]
+name = "4-fastapi-pydnatic"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "daw159", email = "mdawood78612@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = []
+
+[project.scripts]
+4-fastapi-pydnatic = "4_fastapi_pydnatic:main"
+
+[build-system]
+requires = ["uv_build>=0.12.1,<0.13.0"]
+build-backend = "uv_build"
