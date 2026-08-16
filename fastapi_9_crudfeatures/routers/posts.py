@@ -12,10 +12,14 @@ from fastapi import APIRouter
 router=APIRouter()
 
 
-@router.get("",response_model=list[PostResponse])
+@router.get("", response_model=list[PostResponse])
 async def get_posts(db: Annotated[AsyncSession, Depends(get_db)]):
-    result=await db.execute(select(model.Post).options(selectinload(model.Post.author).order_by(model.Post.date_posted.dec())))
-    posts=result.scalars().all()
+    result = await db.execute(
+        select(model.Post)
+        .options(selectinload(model.Post.author))
+        .order_by(model.Post.date_posted.desc())
+    )
+    posts = result.scalars().all()
     return posts
 
 
