@@ -6,7 +6,7 @@ from pwdlib import PasswordHash
 
 from config import settings
 
-password_hash=PasswordHash.recommend()
+password_hash = PasswordHash.recommended()
 
 oauth2_scheme=OAuth2PasswordBearer(tokenUrl="/api/users/token")
 
@@ -29,7 +29,7 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None) -> s
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(
         to_encode,
-        settings.secret_key.get_secret_value(),
+        settings.secret_str.get_secret_value(),
         algorithm=settings.algorithm,
     )
     return encoded_jwt
@@ -39,7 +39,7 @@ def verify_access_token(token: str) -> str | None:
     try:
         payload = jwt.decode(
             token,
-            settings.secret_key.get_secret_value(),
+            settings.secret_str.get_secret_value(),
             algorithms=[settings.algorithm],
             options={"require": ["exp", "sub"]},
         )
