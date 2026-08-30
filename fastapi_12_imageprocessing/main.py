@@ -26,27 +26,11 @@ async  def lifespan(_app:FastAPI):
 app = FastAPI(lifespan=lifespan)   # ← currently missing this argument
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/media", StaticFiles(directory="media"), name="media")
 templates = Jinja2Templates(directory="templates")
 
 app.include_router(users.router,prefix="/api/users",tags=["users"])
 app.include_router(posts.router,prefix="/api/posts",tags=["posts"])
-
-# posts: list[dict] = [
-#     {
-#         "id": 1,
-#         "author": "Mian David",
-#         "title": "FastAPI is Awesome",
-#         "content": "This framework is really easy to use and super fast.",
-#         "date_posted": "April 20, 2025",
-#     },
-#     {
-#         "id": 2,
-#         "author": "Joonny Deol",
-#         "title": "Python is Great for Web Development",
-#         "content": "Python is a great language for web development, and FastAPI makes it even better.",
-#         "date_posted": "April 21, 2025",
-#     },
-# ]
 
 
 @app.get("/", include_in_schema=False, name="home")
