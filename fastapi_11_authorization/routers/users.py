@@ -51,8 +51,7 @@ async def create_user(user:UserCreate,db:Annotated[AsyncSession,Depends(get_db)]
 @router.get("/me", response_model=UserPrivate)
 async def get_current_user(current_user:CurrentUser):
     return current_user
-     
-      
+        
 @router.get("/{user_id}",response_model=UserPublic)  
 async def get_user(user_id:int,db:Annotated[AsyncSession,Depends(get_db)]):
       result=await db.execute(
