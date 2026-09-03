@@ -1,7 +1,7 @@
-from fastapi import HTTPException,status,Depends
+from fastapi import HTTPException,status,Depends,Query
 from sqlalchemy.orm  import selectinload
 from database import get_db
-from schemas import PostCreate ,PostResponse,UserCreate,PostUpdate,UserUpdate
+from schemas import PostCreate ,PostResponse,UserCreate,PostUpdate,UserUpdate,PaginatedPostResponse
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 import model
@@ -12,8 +12,10 @@ from auth import CurrentUser
 router=APIRouter()
 
 
-@router.get("", response_model=list[PostResponse])
-async def get_posts(db: Annotated[AsyncSession, Depends(get_db)]):
+@router.get("", response_model=PaginatedPostResponse)
+async def get_posts(db: Annotated[AsyncSession, Depends(get_db)],
+                    skip: int = Query(0, ge=0),
+                    limit: int = Query(10, ge=1, le=100)):
     result = await db.execute(
         select(model.Post)
         .options(selectinload(model.Post.author))

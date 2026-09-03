@@ -5,7 +5,7 @@ from pathlib import Path
 import httpx
 from sqlalchemy import delete, select, update
 
-import models
+import model
 from database import AsyncSessionLocal, engine
 from image_utils import PROFILE_PICS_DIR
 from main import app
@@ -14,215 +14,203 @@ POPULATE_IMAGES_DIR = Path("populate_images")
 
 USERS = [
     {
-        "username": "CoreyMSchafer",
-        "email": "CoreyMSchafer@gmail.com",
-        "password": "TestPassword1!",
+        "username": "LahoriDude",
+        "email": "lahoridude@gmail.com",
+        "password": "LahorePassword1!",
         "image": "corey.png",
     },
     {
-        "username": "DefaultDude",
-        "email": "TestEmail2@test.com",
-        "password": "TestPassword2!",
+        "username": "DesiGuy",
+        "email": "desiguy@gmail.com",
+        "password": "DesiPassword2!",
         # No image - uses default
     },
     {
-        "username": "WillowTheCat",
-        "email": "TestEmail3@test.com",
-        "password": "TestPassword3!",
+        "username": "ChaiLover",
+        "email": "chailover@gmail.com",
+        "password": "ChaiPassword3!",
         "image": "willow.png",
     },
     {
-        "username": "FarmDogs",
-        "email": "TestEmail4@test.com",
-        "password": "TestPassword4!",
+        "username": "CricketFan",
+        "email": "cricketfan@gmail.com",
+        "password": "CricketPassword4!",
         "image": "farmdogs.png",
     },
     {
-        "username": "PoppyTheCoder",
-        "email": "TestEmail5@test.com",
-        "password": "TestPassword5!",
+        "username": "LahoreFoodie",
+        "email": "lahorefoodie@gmail.com",
+        "password": "FoodiePassword5!",
         "image": "poppy.png",
     },
     {
-        "username": "GoodBoyBronx",
-        "email": "TestEmail6@test.com",
-        "password": "TestPassword6!",
+        "username": "DesiExplorer",
+        "email": "desiexplorer@gmail.com",
+        "password": "ExplorerPassword6!",
         "image": "bronx.png",
     },
 ]
 
 POSTS = [
     {
-        "title": "Why I Love FastAPI",
-        "content": "FastAPI has completely changed how I build APIs. The automatic documentation, type hints, and async support make development so much faster. Plus, the performance is incredible!",
+        "title": "Why Lahore Food Hits Different",
+        "content": "There is something special about Lahore food. You can eat a simple plate of daal chawal and be completely satisfied, or go all out with karahi, naan, kebabs, and dessert. The only problem is deciding where to eat.",
     },
     {
-        "title": "Corey Schafer Has the Best YouTube Tutorials!",
-        "content": "This was written by a viewer and definitely not by me... I mean him. Totally not written by him, but by me... a real viewer. Seriously, check out his channel for amazing Python content.",
+        "title": "The Never Ending Search for Good Chai",
+        "content": "A good cup of chai can fix almost anything. Bad day? Chai. Guests coming over? Chai. Friends sitting together with nothing to talk about? Make chai and somehow the conversation starts.",
     },
     {
-        "title": "Async/Await Finally Clicked",
-        "content": "I've been struggling with async programming for months, but FastAPI's approach finally made it click. Using 'async def' for endpoints and 'await' for database calls just makes sense.",
+        "title": "Lahore Traffic is a Different Game",
+        "content": "You can leave home twenty minutes early, check the traffic before leaving, choose a different route, and still arrive late. Lahore traffic has a way of making every journey an adventure.",
     },
     {
-        "title": "Schafer? I Barely Know Her!",
-        "content": "Is anyone actually reading these blog posts? Do they really need to say anything? I can keep going all day. At least AI can... Claude, keep going, please.",
+        "title": "My Favorite Pakistani Foods",
+        "content": "If I had to choose my favorite Pakistani foods, biryani, chicken karahi, nihari, seekh kebab, and daal chawal would definitely be on the list. And obviously, none of them are complete without naan or roti.",
     },
     {
-        "title": "Pydantic Validation is Magic",
-        "content": "The way Pydantic handles validation in FastAPI is incredible. Define your model with type hints, and boom - automatic validation, serialization, and documentation. No more writing validation code by hand!",
+        "title": "Cricket is Basically a Religion Here",
+        "content": "You don't have to be a professional cricketer to have an opinion about cricket in Pakistan. Everyone knows which player should be selected, who should open the innings, and exactly what the captain did wrong.",
     },
     {
-        "title": "From Flask to FastAPI",
-        "content": "I made the switch from Flask to FastAPI last month. The learning curve was minimal, and the benefits are huge. Automatic OpenAPI docs, better performance, and native async support. No regrets!",
+        "title": "The Problem With Pakistani Weddings",
+        "content": "Pakistani weddings are supposed to be one event, but somehow they turn into an entire season. Dholki, mehndi, baraat, walima, dinners, family gatherings... by the end of it you need another vacation just to recover.",
     },
     {
-        "title": "Some of My Favorite Horror Movies",
-        "content": "I love horror movies and practical effects. One of my favorites is 'The Thing'. Hereditary is a great modern one, but most people have seen it. One modern one I really liked that not as many people have seen is 'The Night House'. It's a slow burn but really effective. More psychological than jump-scare based.",
+        "title": "A Walk Around Anarkali",
+        "content": "Anarkali has a completely different energy from modern shopping malls. The streets are busy, shops are everywhere, and there is always something interesting to look at. You can go there for one thing and come back with five.",
     },
     {
-        "title": "Type Hints Changed My Life",
-        "content": "I used to think type hints were just extra typing (pun intended). But after using FastAPI, I see how they enable incredible tooling - better autocomplete, automatic validation, and self-documenting code.",
+        "title": "Rain Makes Lahore Beautiful",
+        "content": "Lahore looks completely different after rain. The temperature drops, the roads shine, and everyone suddenly wants chai and pakoras. The only problem is that the traffic somehow becomes even worse.",
     },
     {
-        "title": "The Power of Dependency Injection",
-        "content": "FastAPI's dependency injection system is so elegant. Need a database session? Just add it as a parameter. Need the current user? Same thing. It makes the code so clean and testable.",
+        "title": "Biryani: A Very Serious Discussion",
+        "content": "There are few food debates more serious than biryani. Everyone has an opinion about the perfect amount of masala, potatoes, rice, and meat. Personally, I think a good biryani should be spicy enough to make you reach for the raita.",
     },
     {
-        "title": "SQLAlchemy 2.0 Is Worth the Upgrade",
-        "content": "If you're still using SQLAlchemy 1.x patterns, it's time to upgrade. The new 2.0 style with select() and mapped_column() is much more explicit and works beautifully with async.",
+        "title": "The Annual Cricket Match With Friends",
+        "content": "Playing cricket with friends sounds simple until everyone starts arguing about the teams, the batting order, the last ball, and whether that was actually a catch. Somehow the match takes three hours and nobody agrees on the final score.",
     },
     {
-        "title": "Hot Take: Python > JavaScript for APIs",
-        "content": "Yes, I said it. For backend APIs, Python with FastAPI beats Node.js. Fight me in the comments. (Just kidding, this blog doesn't have comments... yet.)",
+        "title": "University Life in Pakistan",
+        "content": "University life is a strange combination of assignments, presentations, exams, friends, chai breaks, and trying to figure out what is actually happening in the lecture. Somehow the semester is always almost over before you realize it.",
     },
     {
-        "title": "Understanding HTTP Status Codes",
-        "content": "200 OK, 201 Created, 400 Bad Request, 404 Not Found, 500 Internal Server Error. Learn these codes - they're how your API communicates with the world. FastAPI makes it easy to return the right ones.",
+        "title": "The Magic of Daal Chawal",
+        "content": "Sometimes the simplest food is the best. A good plate of daal chawal with achar and maybe some raita can compete with almost anything. It is comfort food in its purest form.",
     },
     {
-        "title": "Some of My Favorite Video Games",
-        "content": "The one I probably play the most, but not my favorite, is League of Legends... It's a love/hate relationship. If you play, you get it. My favorites are all single-player RPGs. The Elder Scrolls series (Especially Morrowind and Skyrim) were awesome. The Baldur's Gate series took up a lot of my time as a kid, and more recently, the 3rd one was great. Speaking of Baldur's Gate, I love that old isometric style of RPG, so I looked for more modern equivalents and found Pillars of Eternity, which was fantastic. Also both Pathfinder: Kingmaker and Wrath of the Righteous were a lot of fun as well.",
+        "title": "Why Everyone Loves PSL",
+        "content": "The PSL has become one of my favorite times of the year. The matches, rivalries, crowds, commentary, and endless discussions make every game entertaining. Even people who don't normally watch cricket suddenly become experts.",
     },
     {
-        "title": "JWT Authentication Demystified",
-        "content": "JSON Web Tokens seemed scary at first, but they're actually pretty simple. Encode some user data, sign it with a secret, and use it to verify requests. FastAPI + PyJWT makes it straightforward.",
+        "title": "Lahore at Midnight",
+        "content": "There is something about Lahore late at night. The roads are quieter in some places, food spots are still open, and you can find people sitting outside having chai. Sometimes the best conversations happen after midnight.",
     },
     {
-        "title": "Tips for API Design",
-        "content": "Use nouns for resources (/users, /posts), HTTP verbs for actions (GET, POST, PUT, DELETE), and return consistent responses. FastAPI's response_model helps enforce this consistency.",
+        "title": "The Great Chana Chaat Debate",
+        "content": "Some people like their chana chaat spicy, some want extra chutney, some want more potatoes, and some somehow turn it into a completely different dish. There is no correct recipe, but everyone thinks their version is the best.",
     },
     {
-        "title": "Path Parameters vs Query Parameters",
-        "content": "Use path parameters for required resource identifiers (/users/123) and query parameters for optional filters (/posts?author=corey&limit=10). FastAPI handles both beautifully with automatic validation.",
+        "title": "Some of My Favorite Pakistani Dramas",
+        "content": "Pakistani dramas have a special ability to turn one small family problem into thirty episodes. Still, when the story is good, it becomes impossible to stop watching. You tell yourself you'll watch one episode and suddenly it is 2 AM.",
     },
     {
-        "title": "Error Handling Done Right",
-        "content": "Don't just return 500 for everything! Use HTTPException to return meaningful status codes and messages. Your API consumers will thank you when debugging issues.",
+        "title": "The First Day of Eid",
+        "content": "Eid morning has its own feeling. New clothes, getting ready early, meeting family, eating something sweet, and receiving messages from people you haven't talked to in months. The day goes by way too quickly.",
     },
     {
-        "title": "Why I Switched to UV",
-        "content": "UV is blazingly fast for Python package management. Install packages in milliseconds instead of minutes. If you haven't tried it yet, you're missing out!",
+        "title": "Eid Food is a Different Category",
+        "content": "Eid breakfast is already enough to put you into a food coma, but then lunch arrives and somehow there is even more food. By the evening you are completely full and someone still asks if you want to eat something.",
     },
     {
-        "title": "What About Favorite Books?",
-        "content": "I don't read a lot of fiction. The last fiction book I read was 'The Martian' by Andy Weir, which I really enjoyed. But most of my reading is non-fiction. Some of my favorites are 'Meditations' by Marcus Aurelius, 'Conscious' by Annaka Harris, 'How to Die' by Seneca, and 'The Last Lecture' by Randy Pausch. The latest fiction book I'm reading through (and have been for a while) is 'House of Leaves' by Mark Z. Danielewski. It's... different, but awesome.",
+        "title": "My Favorite Places to Visit in Lahore",
+        "content": "Lahore has so many different places to explore. The old city has history and character, while newer areas have restaurants, cafes, and shopping. Sometimes you don't even need a plan; just going out is enough.",
     },
     {
-        "title": "Testing FastAPI Applications",
-        "content": "FastAPI's TestClient makes testing a breeze. Write tests for your endpoints, mock dependencies, and catch bugs before they hit production. Your future self will thank you.",
+        "title": "The Joy of Late Night Food",
+        "content": "There is something special about eating after midnight. Maybe it is the hunger, maybe it is the company, or maybe everything just tastes better when you should already be sleeping. Lahore definitely has no shortage of late-night food options.",
     },
     {
-        "title": "Environment Variables and Security",
-        "content": "Never hardcode secrets! Use environment variables and pydantic-settings to keep your API keys, database URLs, and JWT secrets safe. It's Security 101.",
+        "title": "When Guests Come Over",
+        "content": "The moment someone says guests are coming, the entire house changes. Suddenly the living room needs cleaning, extra chairs appear from nowhere, and there is enough food to feed twice as many people as actually arrive.",
     },
     {
-        "title": "CORS: The Bane of Frontend Devs",
-        "content": "Getting CORS errors? FastAPI's CORSMiddleware is your friend. Just remember: be specific about allowed origins in production. Don't use '*' unless you really mean it.",
+        "title": "The Pakistani Parent Starter Pack",
+        "content": "Every Pakistani household has certain classic questions. Have you eaten? When are you coming home? Why are you using your phone so much? And the most dangerous one: what are you planning to do with your life?",
     },
     {
-        "title": "Async Database Queries",
-        "content": "Blocking database calls in async code? That's a performance killer. Use async drivers like psycopg (for PostgreSQL) or aiosqlite to keep your event loop happy.",
+        "title": "Summer in Lahore",
+        "content": "Lahore summers are not something you casually experience. You survive them. The moment you step outside, you immediately regret your decision. The best strategy is cold drinks, air conditioning, and pretending you don't need to go anywhere.",
     },
     {
-        "title": "The Beauty of Response Models",
-        "content": "Response models aren't just for documentation - they filter out sensitive fields automatically. Define what goes out, and Pydantic handles the rest.",
+        "title": "Winter Chai is Superior",
+        "content": "Chai is good all year, but winter chai is different. Sitting somewhere warm with a hot cup while the weather outside is cold is one of the simplest pleasures. Add some biscuits or pakoras and it gets even better.",
     },
     {
-        "title": "Let's Talk Board Games",
-        "content": "I love Settlers of Catan. It's a classic for a reason. I'm actually going to make a sword in my woodshop soon that will be my friend group's trophy for the annual Catan champion that we're going to call 'The Katana of Catan'. One thing I've always wanted to do, but never have, is play an in-person Dungeons & Dragons campaign. I've played so many D&D inspired video games, but never the real deal. Hopefully someday...",
+        "title": "The Search for the Perfect Burger",
+        "content": "Finding a really good burger sounds easy until you actually start looking. One place has amazing sauce, another has better meat, another has incredible fries. Eventually you realize you are going to have to try them all.",
     },
     {
-        "title": "API Versioning Strategies",
-        "content": "APIs evolve. Version them from day one! Whether you use URL prefixes (/v1/users) or headers, plan for change. Breaking changes without versioning breaks trust.",
+        "title": "Friends and Random Plans",
+        "content": "The best plans are usually the ones nobody planned properly. Someone sends a message saying 'bahar chalo' and twenty minutes later everyone is trying to decide where to go. Somehow those random outings become the best memories.",
     },
     {
-        "title": "Background Tasks in FastAPI",
-        "content": "Don't make users wait for emails to send or files to process. FastAPI's BackgroundTasks lets you return immediately while work continues in the background.",
+        "title": "Why Pakistani Families Love Functions",
+        "content": "There is always a function. Birthday, engagement, wedding, dinner, Eid gathering, family visit, or someone's cousin's event. You might not know half the people there, but somehow you are still expected to attend.",
     },
     {
-        "title": "Rate Limiting Your API",
-        "content": "Protect your API from abuse with rate limiting. Too many requests? Return 429 Too Many Requests. Your server (and your wallet) will thank you.",
+        "title": "The Art of Bargaining",
+        "content": "Shopping in Pakistan teaches you negotiation skills whether you want them or not. You ask the price, the shopkeeper gives a number, you give another number, and eventually both sides pretend they have made a great deal.",
     },
     {
-        "title": "Documentation That Writes Itself",
-        "content": "Add docstrings to your endpoints and they appear in Swagger UI. Add examples to your Pydantic models and they show up too. Documentation has never been this easy.",
+        "title": "My Favorite Street Foods",
+        "content": "Street food has a completely different charm. Gol gappay, samosas, pakoras, bun kebabs, chaat, and fries all have their own place. You don't always need an expensive restaurant when a small food stall can deliver something amazing.",
     },
     {
-        "title": "WebSockets with FastAPI",
-        "content": "REST isn't the only game in town. FastAPI supports WebSockets for real-time communication. Chat apps, live updates, notifications - all possible!",
+        "title": "The Philosophy of Gol Gappay",
+        "content": "Eating gol gappay is not as simple as it looks. First you choose the filling, then the chutney, then somehow the entire thing breaks before you can eat it. And after eating one, you immediately want another.",
     },
     {
-        "title": "Favorite Hobbies, You Ask?",
-        "content": "Woodworking, hands down. I love making things with wood, but I wish I had more time for it. There's something special about making something with your own hands, with materials that are local. A lot of the stuff I've built came from trees that fell on my family's property. My stuff might not always be as good as something you buy in a store, but there's a story and a connection there that makes it better than anything I could buy elsewhere.",
+        "title": "Watching Cricket With Family",
+        "content": "Watching a Pakistan match with family is more stressful than watching it alone. Everyone has an opinion, everyone is shouting advice at the television, and someone always says we are definitely going to lose right before Pakistan starts winning.",
     },
     {
-        "title": "Custom Validators in Pydantic",
-        "content": "Need validation beyond type checking? Pydantic's field_validator and model_validator decorators let you add custom logic. Validate emails, check password strength, whatever you need.",
+        "title": "The Weekend Routine",
+        "content": "Weekends usually start with the promise of being productive. Then you sleep a little longer, have breakfast late, spend time on your phone, meet friends, go out for food, and suddenly it is Sunday night.",
     },
     {
-        "title": "The ORM vs Raw SQL Debate",
-        "content": "ORMs like SQLAlchemy add abstraction but can hide performance issues. Know when to use the ORM and when to drop to raw SQL. Both have their place.",
+        "title": "A Perfect Sunday in Lahore",
+        "content": "A perfect Sunday doesn't need to be complicated. Sleep in, have a proper breakfast, go somewhere with friends or family, eat good food, drink chai, and come home without thinking about Monday for as long as possible.",
     },
     {
-        "title": "Debugging Async Code",
-        "content": "Async bugs can be tricky. Use logging liberally, understand the event loop, and don't mix sync and async without care. asyncio.run() is your entry point.",
+        "title": "Why Pakistani Food Needs Raita",
+        "content": "Raita is underrated. Spicy biryani without raita feels incomplete, and a plate of kebabs somehow becomes better when there is a little raita on the side. It is basically the peace treaty of Pakistani food.",
     },
     {
-        "title": "Containerizing FastAPI Apps",
-        "content": "Docker + FastAPI = deployment bliss. Create a Dockerfile, build your image, and deploy anywhere. Consistency across environments is priceless.",
+        "title": "The Great Coke vs Pepsi Debate",
+        "content": "Every friend group eventually ends up discussing which soft drink is better. People have surprisingly strong opinions about it. Personally, I think both are good depending on what you are eating, but try saying that during a serious debate.",
     },
     {
-        "title": "Health Check Endpoints",
-        "content": "Add a /health endpoint to your API. Load balancers and orchestrators need to know if your service is alive. Return 200 if healthy, details if not. I didn't do this in this tutorial, but there's only so much time in a video!",
+        "title": "Pakistani Parents and Air Conditioning",
+        "content": "The air conditioner can be running for five minutes before someone asks who left it on. Then the temperature is raised, someone complains it is too hot, and five minutes later somebody lowers it again. This cycle never ends.",
+    },
+    {
+        "title": "When the Electricity Goes Out",
+        "content": "There is a special moment when everything suddenly turns off and the entire house goes silent. Everyone checks their phone, someone asks if the electricity is gone, and within thirty seconds someone has already started complaining about the heat.",
+    },
+    {
+        "title": "The Mystery of Family Group Chats",
+        "content": "Family WhatsApp groups are impossible to predict. One morning you get a good morning message, then a random video, then someone's wedding invitation, followed by a political discussion nobody asked for. Somehow there are 147 unread messages before breakfast.",
+    },
+    {
+        "title": "What Makes Lahore Home",
+        "content": "Lahore can be chaotic, crowded, noisy, and unbelievably hot, but there is something comforting about it. The food, the people, the old streets, the conversations over chai, and the feeling that there is always somewhere to go make it feel like home.",
     },
     {
         "title": "Hmm... What Else?",
-        "content": "I'm running out of ideas for these blog posts. Maybe I should just write about how great FastAPI is... Oh wait, I've already done that multiple times. Well, if you're still reading, thanks for sticking with it! You're awesome.",
-    },
-    {
-        "title": "Pagination: Don't Return Everything",
-        "content": "Returning 10,000 records in one response? Please don't. Implement pagination with limit and offset (or better, cursor-based). Your database and clients will be happier.",
-    },
-    {
-        "title": "OpenAPI Schema Customization",
-        "content": "FastAPI's auto-generated OpenAPI schema is great, but sometimes you need to customize. Add examples, descriptions, and tags to make your docs shine.",
-    },
-    {
-        "title": "Security Headers Matter",
-        "content": "Add security headers to your responses: X-Content-Type-Options, X-Frame-Options, Content-Security-Policy. Small effort, big security improvement.",
-    },
-    {
-        "title": "Caching Strategies",
-        "content": "Not every request needs to hit the database. Use caching with Redis or even in-memory for frequently accessed data. Your response times will plummet (in a good way).",
-    },
-    {
-        "title": "GraphQL vs REST",
-        "content": "GraphQL is trendy, but REST is battle-tested. Choose based on your needs, not hype. FastAPI excels at REST, but Strawberry brings GraphQL if you need it.",
-    },
-    {
-        "title": "Movie Quotes!",
-        "content": "'You wanna know how I did it? This is how I did it, Anton. I never saved anything for the swim back.' - 'Gattaca'. One of my favorite movies of all time. As silly as it sounds, that movie is actually one of the main reasons I decided to pursue an internship at NASA back in college. After that internship, I found I had a craving to learn and do more. It pushed me to take programming more seriously, which eventually led me to where I am today... Which is writing a blog post about FastAPI that's just meant to fill space. TLDR: I watched Gattaca and now I'm writing sample blog posts at 3am on a Saturday for this FastAPI tutorial. And you can too!",
+        "content": "I'm running out of ideas for these blog posts. Maybe I should write about Lahore again... Oh wait, I've already done that multiple times. Well, if you're still reading, thanks for sticking around. Now go get yourself some chai.",
     },
 ]
 
@@ -243,8 +231,8 @@ async def clear_existing_data() -> None:
 
     # Clear database tables (order respects foreign keys)
     async with AsyncSessionLocal() as db:
-        await db.execute(delete(models.Post))
-        await db.execute(delete(models.User))
+        await db.execute(delete(model.Post))
+        await db.execute(delete(model.User))
         await db.commit()
     print("Cleared existing data")
 
@@ -253,7 +241,7 @@ async def update_post_dates() -> None:
     now = datetime.now(UTC)
 
     async with AsyncSessionLocal() as db:
-        result = await db.execute(select(models.Post).order_by(models.Post.id))
+        result = await db.execute(select(model.Post).order_by(model.Post.id))
         posts = result.scalars().all()
 
         if not posts:
@@ -261,8 +249,8 @@ async def update_post_dates() -> None:
 
         # First post (POST_44) is the oldest - ~90 days ago
         await db.execute(
-            update(models.Post)
-            .where(models.Post.id == posts[0].id)
+            update(model.Post)
+            .where(model.Post.id == posts[0].id)
             .values(date_posted=now - timedelta(days=90)),
         )
 
@@ -272,8 +260,8 @@ async def update_post_dates() -> None:
             hours_offset = (i * 7) % 24
             post_date = now - timedelta(days=days_ago, hours=hours_offset)
             await db.execute(
-                update(models.Post)
-                .where(models.Post.id == post.id)
+                update(model.Post)
+                .where(model.Post.id == post.id)
                 .values(date_posted=post_date),
             )
 
