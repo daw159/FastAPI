@@ -1,7 +1,7 @@
-from fastapi import FastAPI, Request,HTTPException,status,Depends,UploadFile
+from fastapi import FastAPI, Request,HTTPException,status,Depends,UploadFile,Query
 from sqlalchemy.orm  import selectinload
 from database import get_db
-from schemas import PostCreate ,PostResponse,UserCreate,PostUpdate,UserUpdate,UserPublic,UserPrivate,Token
+from schemas import PostCreate ,PostResponse,UserCreate,PostUpdate,UserUpdate,UserPublic,UserPrivate,Token,PaginatedPostsResponse
 from sqlalchemy import select,func
 from sqlalchemy.ext.asyncio import AsyncSession
 import model
@@ -67,21 +67,45 @@ async def get_user(user_id:int,db:Annotated[AsyncSession,Depends(get_db)]):
       
       raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="User NOT Found ")
   
-@router.get("/{user_id}/posts", name="user_posts", response_model=list[PostResponse])
-async def get_user_posts(user_id: int, db: Annotated[AsyncSession, Depends(get_db)]):
+  
+  
+@router.get("/{user_id}/posts", response_model=PaginatedPostsResponse)
+async def get_user_posts(
+    user_id: int,
+    db: Annotated[AsyncSession, Depends(get_db)],
+    skip: Annotated[int, Query(ge=0)] = 0,
+    limit: Annotated[int, Query(ge=1, le=100)] = settings.posts_per_page,
+):
     result = await db.execute(select(model.User).where(model.User.id == user_id))
     user = result.scalars().first()
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User Not Found")
-
+    
+    count_result = await db.execute(
+        select(func.count())
+        .select_from(model.Post)
+        .where(model.Post.user_id == user_id),
+    )
+    total = count_result.scalar() or 0
+ 
     result = await db.execute(
         select(model.Post)
         .options(selectinload(model.Post.author))
         .where(model.Post.user_id == user_id)
         .order_by(model.Post.date_posted.desc())
+        .offset(skip)
+        .limit(limit),
     )
     posts = result.scalars().all()
-    return posts
+    
+    has_more = skip + len(posts) < total
+    return PaginatedPostsResponse(
+        posts=[PostResponse.model_validate(post) for post in posts],
+        total=total,
+        skip=skip,
+        limit=limit,
+        has_more=has_more,
+    )
 
 @router.post("/token", response_model=Token)
 async def login_for_access_token(

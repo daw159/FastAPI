@@ -51,7 +51,7 @@ class PostResponse(PostBase):
     author: UserPublic
     
     
-class PaginatedPostResponse(BaseModel):
+class PaginatedPostsResponse(BaseModel):
     
     posts: list[PostResponse]
     total: int
