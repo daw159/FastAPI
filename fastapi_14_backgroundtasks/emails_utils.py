@@ -1,4 +1,4 @@
-import aismtplib
+import aiosmtplib
 from email.message import EmailMessage
 from fastapi.templating import Jinja2Templates
 

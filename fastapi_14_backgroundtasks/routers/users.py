@@ -92,7 +92,7 @@ async def forgot_password(
         )
     token = generate_reset_token()
     hash_token = hash_reset_token(token)
-    expires_at=datetime.now(UTC) + timedelta(hours=settings.password_reset_token_expiration_hours)
+    expires_at=datetime.now(UTC) + timedelta(hours=settings.reset_token_expire_minutes)
     reset_token=model.PasswordResetToken(
         user_id=user.id,
         token_hash=hash_token,
@@ -100,11 +100,11 @@ async def forgot_password(
     )
     
     db.add(reset_token)
-    db.commit()
+    await db.commit()
     
     
     background_tasks.add_task(send_password_reset_email,to_email=user.email,username=user.username
-                              ,token=token,expires_at=expires_at,)
+                              ,token=token,)
     
     return {
         "message": "If an account exists with this email, you will receive password reset instructions.",
