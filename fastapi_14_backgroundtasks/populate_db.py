@@ -214,6 +214,7 @@ POSTS = [
     },
 ]
 
+
 # The 44th post - always the oldest (easter egg for pagination tutorial)
 POST_44 = {
     "title": "Fun Fact: My High School Football Number Was #44",
@@ -231,6 +232,7 @@ async def clear_existing_data() -> None:
 
     # Clear database tables (order respects foreign keys)
     async with AsyncSessionLocal() as db:
+        await db.execute(delete(model.PasswordResetToken))
         await db.execute(delete(model.Post))
         await db.execute(delete(model.User))
         await db.commit()
@@ -369,3 +371,8 @@ async def populate() -> None:
 
 if __name__ == "__main__":
     asyncio.run(populate())
+
+
+
+
+
