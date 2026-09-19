@@ -1,5 +1,5 @@
 [project]
-name = "fastapi-14-background_tasks"
+name = "fastapi_15_postgres"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
