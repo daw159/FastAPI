@@ -7,7 +7,9 @@ from sqlalchemy import delete, select, update
 
 import model
 from database import AsyncSessionLocal, engine
-from image_utils import PROFILE_PICS_DIR
+import cloudinary.api
+
+from image_utils import PROFILE_FOLDER
 from main import app
 
 POPULATE_IMAGES_DIR = Path("populate_images")
@@ -223,12 +225,9 @@ POST_44 = {
 
 
 async def clear_existing_data() -> None:
-    # Delete profile pictures from local storage
-    if PROFILE_PICS_DIR.exists():
-        for file in PROFILE_PICS_DIR.iterdir():
-            if file.is_file() and file.name != ".gitkeep":
-                file.unlink()
-        print(f"Deleted profile pictures from {PROFILE_PICS_DIR}")
+    # Delete profile pictures from Cloudinary
+    cloudinary.api.delete_resources_by_prefix(f"{PROFILE_FOLDER}/")
+    print("Deleted profile pictures from Cloudinary")
 
     # Clear database tables (order respects foreign keys)
     async with AsyncSessionLocal() as db:
@@ -366,7 +365,7 @@ async def populate() -> None:
     print("\nDone!")
     print(f"  {len(USERS)} users")
     print(f"  {len(POSTS) + 1} posts")
-    print("  Profile pictures saved locally")
+    print("  Profile pictures uploaded to Cloudinary")
 
 
 if __name__ == "__main__":

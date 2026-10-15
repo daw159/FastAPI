@@ -384,6 +384,6 @@ async def delete_user_picture(
     await db.commit()
     await db.refresh(current_user)
 
-    delete_profile_image(old_filename)
+    await run_in_threadpool(delete_profile_image, old_filename)
 
     return current_user

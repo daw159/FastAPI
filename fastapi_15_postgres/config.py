@@ -23,6 +23,10 @@ class Settings(BaseSettings):
     mail_password:SecretStr=SecretStr("")
     mail_use_tls:bool=True
     
+    cloudinary_cloud_name: str
+    cloudinary_api_key: str
+    cloudinary_api_secret: str
+    
     frontend_url:str="http://localhost:8000"
     
 settings=Settings()
